@@ -177,3 +177,9 @@ output_file_type <- "presentation"
 
 # call function
 render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = news_outlet_labels, label_to_df_hash_IN = outlet_df_hash_list, output_directory_path_IN = output_directory_path, output_file_type_IN = output_file_type )
+
+# try using this to just plot one.
+news_outlet_labels <- c( "nyt" )
+nyt_df <- subset( tweet_df, outlet_label == "nyt" )
+outlet_df_hash_list <- list( "nyt" = nyt_df )
+render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = news_outlet_labels, label_to_df_hash_IN = outlet_df_hash_list, output_directory_path_IN = output_directory_path, output_file_type_IN = output_file_type )

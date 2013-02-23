@@ -322,8 +322,16 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
 
         # no count passed in - use length of list.
         color_count <- label_list_length
+        
+        # if length is 1, just set it to 2 so we can plot single CDFs.
+        if ( color_count == 1 ) {
+            
+            # only one label passed in.  A solitary CDF.
+            color_count <- 2
+  
+        }
 
-    }
+    } #-- END color_count_IN --#
     
     # output directory path?
     if ( is.null( output_directory_path_IN ) == FALSE ) {
