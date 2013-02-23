@@ -145,3 +145,35 @@ column_hist_cum_sum_normal <- sapply( column_hist_cum_sum, function( i ) { i / c
 # plot the cumulative sum by retweet_count_vector
 plot( column_hist_breaks, column_hist_cum_sum, type='l' ) # un-normalized.
 plot( column_hist_breaks, column_hist_cum_sum_normal, type='l' ) # normalized.
+
+#===============================================================================
+# Use functions to plot aggregate CDFs
+#===============================================================================
+
+# test using CDF_and_KS_test_functions to make plots.  Load functions.
+source( '~/Documents/work/research/projects/SoCS/papers/CSCW-2013/data/R/r_scripts/CDF_and_KS_test/CDF_and_KS_test_functions.r', echo = TRUE )
+
+# to start, just want tweet_user_mentions between WSJ and NPR.
+# All labels: news_outlet_labels <- c( "bbc", "cbs", "cnn", "drudge", "fox", "huffington", "msnbc", "npr", "nyt", "usatoday", "wpo", "wsj" )
+news_outlet_labels <- c( "npr", "wsj" )
+
+# set up data frames
+npr_df <- subset( tweet_df, outlet_label == "npr" )
+wsj_df <- subset( tweet_df, outlet_label == "wsj" )
+
+# map outlets to data frames
+# All labels: outlet_df_hash_list <- list( "bbc" = bbc_df, "cbs" = cbs_df, "cnn" = cnn_df, "drudge" = drudge_df, "fox" = fox_df, "huffington" = huffington_df, "msnbc" = msnbc_df, "npr" = npr_df, "nyt" = nyt_df, "usatoday" = usatoday_df, "wpo" = wpo_df, "wsj" = wsj_df )
+outlet_df_hash_list <- list( "npr" = npr_df, "wsj" = wsj_df )
+
+# set up variables names
+# All names: variable_names <- c( "tweet_retweet_count", "user_follower_count", "user_favorites_count", "tweet_user_mention_count", "tweet_hashtag_mention_count", "tweet_url_count", "tweet_text_length" )
+variable_names <- c( "tweet_user_mention_count" )
+
+# output directory path - must include trailing slash.
+output_directory_path <- "output/aggregated_CDFs/presentation/"
+
+# output file type
+output_file_type <- "presentation"
+
+# call function
+render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = news_outlet_labels, label_to_df_hash_IN = outlet_df_hash_list, output_directory_path_IN = output_directory_path, output_file_type_IN = output_file_type )

@@ -263,6 +263,15 @@ render_all_dist_data <- function( data_frame_IN = NULL, group_plots_by_variable_
 #    variable has a single graph that contains all plots.
 # preconditions: Must pass in a list of labels and a data hash thta maps each
 #    label to a dataframe.
+# parameters:
+# - variable_list_IN: list of variables we will create CDF plots for.
+# - variable_to_max_hash_IN: mapping of variable names to max values, in case they have been pre-determined.  If NULL, calculates max on the fly.
+# - label_list_IN: required - list of groupings we will be generating plots for (so list of outlets, or list of ideologies - each must also have an entry in label_to_df_hash_IN that contains the data frame for its data).
+# - label_to_df_hash_IN: map of labels from label_list_IN to data frames that contain data for each label.
+# - output_file_type_IN: string to place in the output file name to denote the type of CDF being generated.  Can be empty.
+# - color_count_IN: number of colors you want used in output - if empty, defaults to number of labels in label_list_IN.
+# - output_directory_path_IN: path where we want output to go.  Must include trailing slash.  If empty, defaults to "output/aggregated_cdfs/" in current directory.
+# - font_size_multiplier_IN: numeric indicator of how much you want to increase font size.  Used to set cex and a number of cex.* parameters in call to plot().
 #===============================================================================
 
 render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_hash_IN = NULL, label_list_IN = NULL, label_to_df_hash_IN = NULL, output_file_type_IN = "", color_count_IN = NULL, output_directory_path_IN = NULL, font_size_multiplier_IN = NULL ) {
@@ -474,6 +483,11 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
 #    and ideologies, where each variable has a single graph that contains all
 #    plots.
 # preconditions: Must have loaded our data_frame, pass it in.
+# parameters:
+# - data_frame_IN: data frame containing data we are building CDFs for.
+# - variable_names_IN: list of variables we want to make aggregated CDFs for.
+# - output_directory_path_IN: path where we want output to go. 
+# - font_size_multiplier_IN: numeric indicator of how much you want to increase font size.
 #===============================================================================
 
 render_aggregate_CDFs <- function( data_frame_IN = NULL, variable_names_IN = NULL, output_directory_path_IN = NULL, font_size_multiplier_IN = NULL ) {
