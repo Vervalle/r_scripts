@@ -261,14 +261,18 @@ render_all_dist_data <- function( data_frame_IN = NULL, group_plots_by_variable_
 # function: render_CDFs_by_variable
 # purpose: Plot normalized, log-transformed CDFs for each variable, where each
 #    variable has a single graph that contains all plots.
-# preconditions: Must pass in a list of labels and a data hash that maps each
+# preconditions: Must pass in a list of labels and a data hash thta maps each
 #    label to a dataframe.
 #===============================================================================
 
-render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_hash_IN = NULL, label_list_IN = NULL, label_to_df_hash_IN = NULL, output_file_type_IN = "", color_count_IN = NULL ) {
+render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_hash_IN = NULL, label_list_IN = NULL, label_to_df_hash_IN = NULL, output_file_type_IN = "", color_count_IN = NULL, output_directory_path_IN = NULL, font_size_multiplier_IN = NULL ) {
 
     # process input parameters
     ok_to_process <- TRUE
+    label_list_length <- 0
+    color_count <- 0
+    output_directory_path <- ""
+    font_size_multiplier <- 1
 
     # got variable list?
     if ( is.null( variable_list_IN ) == TRUE ) { 
@@ -311,7 +315,30 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
         color_count <- label_list_length
 
     }
+    
+    # output directory path?
+    if ( is.null( output_directory_path_IN ) == FALSE ) {
 
+        # got an output path - use it.
+        output_directory_path <- output_directory_path_IN
+
+    } else {
+
+        # no output path passed in.  Use default.
+        output_directory_path <- "output/aggregated_cdfs/"
+
+    }
+    
+    # font size multiplier
+    if ( is.null( font_size_multiplier_IN ) == FALSE ) {
+    
+        # Value passed in.  Use it.
+        font_size_multiplier <- font_size_multiplier_IN
+        
+    }
+
+    # Set color palette using rainbow, either length of list or number passed in
+    #    above.
     palette( rainbow( color_count ) )
 
     # Good to go?
@@ -322,7 +349,7 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
         for ( current_variable in variable_list_IN ) {
 
             # for each variable, open an outlet pdf
-            variable_pdf_path <- paste( "output/aggregated_cdfs/", current_variable, "-", output_file_type_IN, "-CDFs.pdf", sep="", collapse=NULL )
+            variable_pdf_path <- paste( output_directory_path, current_variable, "-", output_file_type_IN, "-CDFs.pdf", sep="", collapse=NULL )
             pdf( variable_pdf_path, onefile = TRUE )
 
             # got a max value?
@@ -417,7 +444,7 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
                     y_label <- paste( "percentage of cases" )
 
                     # Make a plot
-                    plot( column_hist_breaks_log, column_hist_cum_sum_normal, type='l', col = current_index, lwd = 2, xlab = x_label, ylab = y_label, main = main_label )
+                    plot( column_hist_breaks_log, column_hist_cum_sum_normal, type='l', col = current_index, lwd = 2, xlab = x_label, ylab = y_label, main = main_label, cex = font_size_multiplier, cex.lab = font_size_multiplier, cex.axis = font_size_multiplier, cex.main = font_size_multiplier, cex.sub = font_size_multiplier )
 
                 } else {
 
@@ -449,14 +476,44 @@ render_CDFs_by_variable <- function( variable_list_IN = NULL, variable_to_max_ha
 # preconditions: Must have loaded our data_frame, pass it in.
 #===============================================================================
 
-render_aggregate_CDFs <- function( data_frame_IN = NULL ) {
+render_aggregate_CDFs <- function( data_frame_IN = NULL, variable_names_IN = NULL, output_directory_path_IN = NULL, font_size_multiplier_IN = NULL ) {
+
+    # declare variables
+    variable_names <- vector()
+    output_directory_path <- NULL
+    font_size_multiplier <- 1
 
     # make sure that the data frame isn't NULL
     if ( is.null( data_frame_IN ) == FALSE ) { 
     
-        # make a vector of all the variable names that we will be processing.
-        variable_names <- c( "tweet_retweet_count", "user_follower_count", "user_favorites_count", "tweet_user_mention_count", "tweet_hashtag_mention_count", "tweet_url_count", "tweet_text_length" )
+        # if vector of variable names not passed in, set to default vector.
+        if ( is.null( variable_names_IN ) == TRUE ) { 
+
+            # make a vector of all the variable names that we will be processing.
+            variable_names <- c( "tweet_retweet_count", "user_follower_count", "user_favorites_count", "tweet_user_mention_count", "tweet_hashtag_mention_count", "tweet_url_count", "tweet_text_length" )
+            
+        } else {
+         
+            variable_names <- variable_names_IN
+            
+        }
+        
+        # check to see if there is a directory path passed in.
+        if ( is.null( output_directory_path_IN ) == FALSE ) {
+        
+            # Value passed in, use it.
+            output_directory_path <- output_directory_path_IN
+           
+        } 
     
+        # check to see if there is a font size multiplier passed in.
+        if ( is.null( font_size_multiplier_IN ) == FALSE ) {
+        
+            # Value passed in, set to empty.
+            font_size_multiplier <- font_size_multiplier_IN
+           
+        }
+
         # make a vector of news outlet identifiers
         news_outlet_labels <- c( "bbc", "cbs", "cnn", "drudge", "fox", "huffington", "msnbc", "npr", "nyt", "usatoday", "wpo", "wsj" )
 
@@ -478,7 +535,7 @@ render_aggregate_CDFs <- function( data_frame_IN = NULL ) {
         outlet_df_hash_list <- list( "bbc" = bbc_df, "cbs" = cbs_df, "cnn" = cnn_df, "drudge" = drudge_df, "fox" = fox_df, "huffington" = huffington_df, "msnbc" = msnbc_df, "npr" = npr_df, "nyt" = nyt_df, "usatoday" = usatoday_df, "wpo" = wpo_df, "wsj" = wsj_df )
 
         # render CDFs for news outlets.
-        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = news_outlet_labels, label_to_df_hash_IN = outlet_df_hash_list, output_file_type_IN = "outlet", color_count_IN = 12 )
+        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = news_outlet_labels, label_to_df_hash_IN = outlet_df_hash_list, output_file_type_IN = "outlet", color_count_IN = 12, output_directory_path_IN = output_directory_path, font_size_multiplier_IN = font_size_multiplier )
 
         # make a vector of ideology identifiers
         ideology_labels <- c( "conservative", "liberal", "control" )
@@ -492,7 +549,7 @@ render_aggregate_CDFs <- function( data_frame_IN = NULL ) {
         ideology_df_hash_list <- list( "conservative" = conservative_df, "control" = control_df, "liberal" = liberal_df )
 
         # render CDFs for ideologies.
-        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = ideology_labels, label_to_df_hash_IN = ideology_df_hash_list, output_file_type_IN = "ideology" )
+        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = ideology_labels, label_to_df_hash_IN = ideology_df_hash_list, output_file_type_IN = "ideology", output_directory_path_IN = output_directory_path, font_size_multiplier_IN = font_size_multiplier )
 
         # make a vector of heterogeneity identifiers
         heterogeneity_labels <- c( "low", "medium", "high" )
@@ -506,7 +563,7 @@ render_aggregate_CDFs <- function( data_frame_IN = NULL ) {
         heterogeneity_df_hash_list <- list( "low" = h_low_df, "medium" = h_medium_df, "high" = h_high_df )
 
         # render CDFs for heterogeneity.
-        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = heterogeneity_labels, label_to_df_hash_IN = heterogeneity_df_hash_list, output_file_type_IN = "heterogeneity" )
+        render_CDFs_by_variable( variable_list_IN = variable_names, label_list_IN = heterogeneity_labels, label_to_df_hash_IN = heterogeneity_df_hash_list, output_file_type_IN = "heterogeneity", output_directory_path_IN = output_directory_path, font_size_multiplier_IN = font_size_multiplier )
 
     } #-- END check to see if we have a data frame --#
 
@@ -695,7 +752,7 @@ compare_variable_distributions <- function( variable_list_IN = NULL, df_id_list_
 
             # output the data frame as a CSV file
             write.table( output_data_frame, file = variable_output_path, sep = ",", col.names = NA )
-
+    
         } #-- END loop over variable names. --#
 
     } #-- END check to see if input arguments are OK --#
@@ -711,11 +768,37 @@ compare_variable_distributions <- function( variable_list_IN = NULL, df_id_list_
 # preconditions: Must have loaded our data_frame, pass it in.
 #===============================================================================
 
-compare_distributions <- function( data_frame_IN = NULL ) {
+compare_distributions <- function( data_frame_IN = NULL, variable_names_IN = NULL, output_directory_path_IN = NULL ) {
 
-    # make a vector of all the variable names that we will be processing.
-    variable_names <- c( "tweet_retweet_count", "user_follower_count", "user_favorites_count", "tweet_user_mention_count", "tweet_hashtag_mention_count", "tweet_url_count", "tweet_text_length" )
+    # declare variables
+    variable_names <- vector()
+    output_directory_path <- NULL
+
+    # if vector of variable names not passed in, set to default vector.
+    if ( is.null( variable_names_IN ) == TRUE ) { 
+
+        # make a vector of all the variable names that we will be processing.
+        variable_names <- c( "tweet_retweet_count", "user_follower_count", "user_favorites_count", "tweet_user_mention_count", "tweet_hashtag_mention_count", "tweet_url_count", "tweet_text_length" )
+        
+    } else {
+        
+        variable_names <- variable_names_IN
+        
+    }
     
+    # check to see if there is a directory path passed in.
+    if ( is.null( output_directory_path_IN ) == FALSE ) {
+    
+        # Value passed in, use it.
+        output_directory_path <- output_directory_path_IN
+        
+    } else {
+        
+        # No value passed in, use default.
+        output_directory_path <- "output/dist_stats"
+        
+    }
+
     # make sure that the data frame isn't NULL
     if ( is.null( data_frame_IN ) == FALSE ) { 
     
@@ -740,7 +823,7 @@ compare_distributions <- function( data_frame_IN = NULL ) {
         outlet_df_hash_list <- list( "bbc" = bbc_df, "cbs" = cbs_df, "cnn" = cnn_df, "drudge" = drudge_df, "fox" = fox_df, "huffington" = huffington_df, "msnbc" = msnbc_df, "npr" = npr_df, "nyt" = nyt_df, "usatoday" = usatoday_df, "wpo" = wpo_df, "wsj" = wsj_df )
 
         # compare variable distributions for news outlets.
-        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = news_outlet_labels, id_to_df_hash_IN = outlet_df_hash_list, output_directory_path_IN = "output/dist_stats/outlets" )
+        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = news_outlet_labels, id_to_df_hash_IN = outlet_df_hash_list, output_directory_path_IN = paste( output_directory_path, "/outlets" ) )
 
         # make a vector of ideology identifiers
         ideology_labels <- c( "conservative", "liberal", "control" )
@@ -754,7 +837,7 @@ compare_distributions <- function( data_frame_IN = NULL ) {
         ideology_df_hash_list <- list( "conservative" = conservative_df, "control" = control_df, "liberal" = liberal_df )
 
         # compare variable distributions for news outlets.
-        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = ideology_labels, id_to_df_hash_IN = ideology_df_hash_list, output_directory_path_IN = "output/dist_stats/ideology" )
+        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = ideology_labels, id_to_df_hash_IN = ideology_df_hash_list, output_directory_path_IN = paste( output_directory_path, "/ideology" ) )
 
         # make a vector of heterogeneity identifiers
         heterogeneity_labels <- c( "low", "medium", "high" )
@@ -768,7 +851,7 @@ compare_distributions <- function( data_frame_IN = NULL ) {
         heterogeneity_df_hash_list <- list( "low" = h_low_df, "medium" = h_medium_df, "high" = h_high_df )
 
         # compare variable distributions for news outlets.
-        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = heterogeneity_labels, id_to_df_hash_IN = heterogeneity_df_hash_list, output_directory_path_IN = "output/dist_stats/heterogeneity" )
+        compare_variable_distributions( variable_list_IN = variable_names, df_id_list_IN = heterogeneity_labels, id_to_df_hash_IN = heterogeneity_df_hash_list, output_directory_path_IN = paste( output_directory_path, "/heterogeneity" ) )
 
     } #-- END check to see if we have a data frame --#
 

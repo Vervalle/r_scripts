@@ -39,7 +39,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -100,7 +103,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -161,7 +167,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -222,7 +231,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -283,7 +295,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -344,7 +359,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -405,7 +423,10 @@ psych::describe( current_column )
 sink()
 
 # histogram (store for CDF)
-column_hist <- hist( current_column, plot = FALSE )
+pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-hist.pdf", sep="", collapse=NULL ) )
+column_hist <- hist( current_column )
+dev.off()
+#column_hist <- hist( current_column, plot = FALSE )
 
 # output so I can capture values.  Example:
 sink("render_dist_data-output.txt", append=TRUE, split=TRUE)
@@ -441,3 +462,17 @@ dev.off()
 pdf( paste( "output/", current_outlet_label, "/", current_outlet_label, "-", current_column_name, "-norm.pdf", sep="", collapse=NULL ) )
 plot( column_hist_breaks, column_hist_cum_sum_normal, type='l', xlab = x_label, ylab = paste( y_label, " (%)" ), main = paste( main_label, " (normalized)" ) ) # normalized.
 dev.off()
+
+# load functions from a source code file, then remove.
+
+# load using the source() function
+source( "render_dist_data_functions.r" )
+
+# render CDFs for a single column - tweet_retweet_count
+render_aggregate_CDFs( data_frame_IN = tweet_df, variable_names_IN = c( "tweet_retweet_count" ) )
+
+# increase the font size on the output
+render_aggregate_CDFs( data_frame_IN = tweet_df, variable_names_IN = c( "tweet_retweet_count" ), font_size_multiplier_IN = 1.5 )
+
+# then remove the functions that are in that file.
+remove( compare_distributions )remove( compare_variable_distributions )remove( render_CDFs_by_variable )remove( render_aggregate_CDFs )remove( render_all_dist_data )remove( render_column_data )
